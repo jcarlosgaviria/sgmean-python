@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sgmean"
+version = "0.1.0"
+description = "Proportional trimmed mean compatible with Statgraphics"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Juan C. Gaviria-Chaverra", email = "jcarlos.gaviria@udea.edu.co"}
+]
+keywords = ["trimmed mean", "robust statistics", "statgraphics", "integer truncation"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Intended Audience :: Science/Research"
+]
+requires-python = ">=3.8"
+dependencies = ["numpy>=1.20"]
+
+[project.optional-dependencies]
+dev = ["pytest", "scipy"]
+
+[project.urls]
+Homepage = "https://github.com/jcarlosgaviria/sgmean-python"
