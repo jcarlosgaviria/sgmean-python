@@ -7,7 +7,7 @@ name = "sgmean"
 version = "0.1.0"
 description = "Proportional trimmed mean compatible with Statgraphics"
 readme = "README.md"
-license = {text = "MIT"}
+license = {text = "GPL-3.0-or-later"}
 authors = [
     {name = "Juan C. Gaviria-Chaverra", email = "jcarlos.gaviria@udea.edu.co"}
 ]
