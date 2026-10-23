@@ -1,0 +1,4 @@
+include README.md LICENSE CHANGELOG.md
+recursive-include docs *.png *.csv
+recursive-include scripts *.py
+recursive-include tests *.py

@@ -41,6 +41,11 @@ def sgmean(x, trim=0.05):
     delta = k - kf
     if k == 0:
         return float(np.mean(x))
+    if n - kf - 1 == kf:
+        # n odd and k in ((n-1)/2, n/2): only the middle observation is left, and it is
+        # the boundary of both tails, so the result is exactly the median (and for
+        # n = 1 the observation itself). The general formula below would count it twice.
+        return float(x[kf])
     if kf == 0:
         suma = (1-k)*x[0] + np.sum(x[1:-1]) + (1-k)*x[-1]
     elif delta == 0:
