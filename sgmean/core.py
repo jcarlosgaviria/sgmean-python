@@ -1,6 +1,16 @@
+from __future__ import annotations
+
+from typing import Any, Optional, Sequence
+
+from numpy.typing import ArrayLike
+
 import numpy as np
 
-def sgmean(x, trim=0.05):
+from ._input import to_array
+
+
+def sgmean(x: ArrayLike, trim: float = 0.05,
+           nan_policy: str = "propagate") -> float:
     """
     Proportional trimmed mean compatible with Statgraphics.
     
@@ -15,6 +25,9 @@ def sgmean(x, trim=0.05):
     trim : float, optional
         Fraction of observations to trim from each tail. Must be
         in [0, 0.5). Default is 0.05.
+    nan_policy : {'propagate', 'omit', 'raise'}, optional
+        What to do with NaN: return NaN (default, like R's ``mean``), drop
+        them, or raise ``ValueError``.
     
     Returns
     -------
@@ -32,10 +45,13 @@ def sgmean(x, trim=0.05):
     >>> sgmean(x, trim=0.10)   # Type B: k=1.50
     1365.8333333333333
     """
-    x = np.sort(np.asarray(x, dtype=float))
-    n = len(x)
     if not (0 <= trim < 0.5):
         raise ValueError("trim must be in [0, 0.5)")
+    x = to_array(x, nan_policy, min_n=0)
+    if np.isnan(x).any():
+        return float("nan")
+    x = np.sort(x)
+    n = len(x)
     k = trim * n
     kf = int(np.floor(k))
     delta = k - kf

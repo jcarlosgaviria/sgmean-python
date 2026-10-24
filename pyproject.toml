@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sgmean"
-version = "0.3.0"
+version = "0.4.0"
 description = "Descriptive and robust statistics compatible with Statgraphics (proportional trimmed mean, winsorized mean, quantiles, biweight scale)"
 readme = "README.md"
 license = {text = "MIT"}
@@ -28,3 +28,7 @@ plots = ["matplotlib"]
 
 [project.urls]
 Homepage = "https://github.com/jcarlosgaviria/sgmean-python"
+Issues = "https://github.com/jcarlosgaviria/sgmean-python/issues"
+
+[tool.setuptools.package-data]
+sgmean = ["py.typed"]

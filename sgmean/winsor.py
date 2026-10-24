@@ -11,9 +11,16 @@ Statgraphics Centurion (Summary Statistics) was found, on seven data sets
 * Winsorized sigma = sample standard deviation (ddof=1) of the winsorized
   sample times ``sqrt((n - 1) / (n - 2k - 1))``.
 """
+from __future__ import annotations
+
+from typing import Any, Optional, Sequence
+
+from numpy.typing import ArrayLike
 import math
 from fractions import Fraction
 import numpy as np
+
+from ._input import to_array
 
 
 def _k(n, trim):
@@ -22,11 +29,9 @@ def _k(n, trim):
     return math.floor(n * Fraction(trim).limit_denominator(10**9))
 
 
-def _winsorize(x, trim):
-    x = np.sort(np.asarray(x, dtype=float).ravel())
+def _winsorize(x, trim, nan_policy="raise"):
+    x = np.sort(to_array(x, nan_policy))
     n = x.size
-    if n == 0 or np.isnan(x).any():
-        raise ValueError("x must be non-empty and free of NaN")
     k = _k(n, trim)
     w = x.copy()
     if k > 0:
@@ -35,15 +40,17 @@ def _winsorize(x, trim):
     return w, k
 
 
-def winsorized_mean(x, trim=0.05):
+def winsorized_mean(x: ArrayLike, trim: float = 0.05,
+                    nan_policy: str = "raise") -> float:
     """Mean of ``x`` after replacing ``floor(trim*n)`` values at each tail."""
-    w, _ = _winsorize(x, trim)
+    w, _ = _winsorize(x, trim, nan_policy)
     return float(w.mean())
 
 
-def winsorized_sigma(x, trim=0.05):
+def winsorized_sigma(x: ArrayLike, trim: float = 0.05,
+                     nan_policy: str = "raise") -> float:
     """Winsorized standard deviation as reported by Statgraphics."""
-    w, k = _winsorize(x, trim)
+    w, k = _winsorize(x, trim, nan_policy)
     n = w.size
     if n - 2 * k - 1 <= 0:
         raise ValueError("not enough observations for this trim")

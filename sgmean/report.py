@@ -109,3 +109,48 @@ class SummaryResult(dict):
 
     def __repr__(self):
         return self.table()
+
+
+class MultiSummaryResult(dict):
+    """Several variables: ``{name: SummaryResult}`` printing as one table.
+
+    ``print(m)`` shows one column per variable; ``m["x"]`` is that variable's
+    ``SummaryResult``; ``m.table(lang="es")`` changes the language;
+    ``m.to_dataframe()`` (needs pandas) and ``m.to_dict()`` export the numbers.
+    """
+
+    def __init__(self, data, trim=0.05, lang=None):
+        super().__init__(data)
+        self.trim = trim
+        self.lang = lang
+
+    def to_dict(self):
+        return {k: dict(v) for k, v in self.items()}
+
+    def to_dataframe(self):
+        import pandas as pd
+        return pd.DataFrame({k: dict(v) for k, v in self.items()})
+
+    def table(self, lang=None):
+        lg = get_language(lang if lang is not None else self.lang)
+        i = 1 if lg == "es" else 0
+        t = f"{self.trim * 100:g}"
+        names = list(self)
+        first = self[names[0]]
+        labels = [_LABELS[k][i].format(t=t) for k in first]
+        cols = [[_fmt(k, v, lg) for k, v in self[nm].items()] for nm in names]
+        w0 = max(len(a) for a in labels)
+        ws = [max(len(nm), max(len(c) for c in col)) for nm, col in zip(names, cols)]
+        head = " " * w0 + "".join("  " + nm.rjust(w) for nm, w in zip(names, ws))
+        title = (("Resumen Estadístico" if lg == "es" else "Summary Statistics")
+                 + f" ({len(names)} variables)")
+        lines = [title, "-" * len(head), head, "-" * len(head)]
+        for r, lab in enumerate(labels):
+            lines.append(f"{lab:<{w0}}" + "".join("  " + col[r].rjust(w)
+                                                  for col, w in zip(cols, ws)))
+        return "\n".join(lines)
+
+    __str__ = table
+
+    def __repr__(self):
+        return self.table()

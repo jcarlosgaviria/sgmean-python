@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.0 (2026-10-24)
+Includes everything in 0.3.1 (table output for the inference/diagnostic results; not published separately).
+### Added
+- **pandas and NaN handling.** Every function accepts lists, arrays, pandas Series (nullable dtypes too) and one-column DataFrames, and has `nan_policy` (`"raise"` default, `"omit"`; `sgmean` also `"propagate"`, its default, as R's `mean`). A DataFrame with several columns is rejected by single-variable functions instead of being silently flattened.
+- **`summary()` for several variables**: pass a DataFrame, a dict of columns or a 2-D array and get a table with one column per variable (`MultiSummaryResult`; `.table(lang="es")`, `.to_dataframe()`, `.to_dict()`). Non-numeric DataFrame columns are skipped with a warning; `nan_policy="omit"` drops NaN per variable.
+- **One-sided tests**: `alternative="two-sided"|"less"|"greater"` in `ttest_trimmed` and `ttest_ind_trimmed` (one-sided interval, as `scipy.stats`; checked against SciPy for integer k).
+- **`ttest_rel_trimmed`**: paired test (trimmed mean of the differences).
+- **`effect_size_trimmed`** and an `effect_size` field in `ttest_ind_trimmed`: robust standardized difference (Algina, Keselman & Penfield, 2005), equal to Cohen's d when `trim=0`; for fractional k the winsorized variance is interpolated (heuristic).
+- **Simulation study** of the paired test and the effect size (`docs/SIMULACION_PAREADO_EFECTO.md`, `scripts/sim_paired_effect.py`): the paired test is practically equivalent to the floor(k) rule in size and power (both far better than the mean-t with heavy tails or skew); the effect size is inflated (about +12 % at n=10, +2 % at n=40) when n is small.
+- **Shared reference vectors** (`tests/reference_vectors.csv`, `scripts/make_reference_vectors.py`) used by the Python and R test suites.
+- **Type hints** on the public API and `py.typed` (annotations only; the package is not yet clean under `mypy`).
+- **Warning** when the effective sample size `n - 2k` is below 8 (intervals and p-values may be unreliable).
+
+## 0.3.1 (unreleased)
+### Changed
+- `ci_trimmed`, `ttest_trimmed`, `ttest_ind_trimmed` and `diagnose_truncation` now print as aligned tables (English or Spanish, same language settings as `summary()`: `set_language`, `SGMEAN_LANG`, or `r.table(lang="es")`). They still unpack like tuples (`lo, hi = ci_trimmed(x)`; `t, p, df, est, se = ttest_trimmed(x)`), so existing code keeps working.
+- `ttest_trimmed` takes an optional `conf` (default 0.95) and stores the interval of the test.
+
 ## 0.3.0 (2026-10-23)
 Also includes everything in 0.2.0 below (the truncation fix, descriptive statistics, MIT licence).
 

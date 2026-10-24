@@ -1,4 +1,5 @@
-include README.md LICENSE CHANGELOG.md
-recursive-include docs *.png *.csv
+include README.md LICENSE CHANGELOG.md CITATION.cff
+recursive-include docs *.png *.csv *.md
 recursive-include scripts *.py
-recursive-include tests *.py
+recursive-include tests *.py *.csv
+include sgmean/py.typed

@@ -177,6 +177,25 @@ linearly between the SEs of the winsorized samples with `floor(k)` and
 `floor(k)+1` values per tail. This interpolation is a **heuristic** validated
 only by pilot simulations; it is not a proven result. Requires SciPy.
 
+Results print as tables (English or Spanish, like `summary()`):
+
+```
+>>> ttest_trimmed(x, mu0=1000, trim=0.05)
+Trimmed-mean t test (proportional trimming)
+-------------------------------------------
+Sample size                              15
+Trim per tail                 5% (k = 0.75)
+Trimmed mean                        1499.07
+Hypothesized mean                      1000
+Standard error                      221.497
+Degrees of freedom                     12.5
+t statistic                         2.25319
+P-value (two-sided)                  0.0429
+95% confidence interval  (1018.61, 1979.54)
+```
+
+They still unpack like tuples: `lo, hi = ci_trimmed(x, 0.05)`.
+
 ### Two samples, diagnostic and plot (0.3.0, experimental)
 
 ```python
@@ -191,4 +210,28 @@ plot_trim_profile(x, trim=0.05)       # step (floor) vs smooth (sgmean); needs m
 `ttest_ind_trimmed` reduces to Yuen's test when `k` is an integer in both
 samples. In a simulation (20000 replications per cell, see `docs/sim_power_twosample.csv`) its type I error
 at alpha = 0.05 was between 0.024 and 0.052 for normal, t3, lognormal,
-exponential and contaminated-normal data. Power is close to Welch for normal data (about 1 point lower) and much higher under heavy tails; two-sided shift alternatives only.
+exponential and contaminated-normal data. Power is close to Welch for normal data (about 1 point lower) and much higher under heavy tails (power was measured for two-sided tests only).
+
+
+## What's new in 0.4.0
+
+```python
+import pandas as pd
+from sgmean import summary, ttest_trimmed, ttest_ind_trimmed, ttest_rel_trimmed, effect_size_trimmed
+
+df = pd.read_excel("datos.xlsx")               # any DataFrame
+summary(df, trim=0.05)                         # one column per numeric variable
+summary(df, trim=0.05, lang="es", nan_policy="omit")
+
+ttest_trimmed(df["ventas"], mu0=1000, alternative="greater", nan_policy="omit")
+ttest_ind_trimmed(df["a"], df["b"], alternative="less")   # result includes a robust effect size
+ttest_rel_trimmed(df["antes"], df["despues"])             # paired
+effect_size_trimmed(df["a"], df["b"], trim=0.1)
+```
+
+* `nan_policy`: `"raise"` (default), `"omit"`; `sgmean` also `"propagate"` (default there, like R's `mean`).
+* `alternative`: `"two-sided"` (default), `"less"`, `"greater"`.
+* A warning is issued when `n - 2k < 8`.
+* Paired test and effect size were also studied by simulation (`docs/SIMULACION_PAREADO_EFECTO.md`, in Spanish): the paired test is practically equivalent to the `floor(k)` rule in size and power (both far better than the mean-t under heavy tails or skew), so the advantage of the proportional rule is consistency, not performance; the robust effect size is inflated by about 12 % at n = 10 and 2 % at n = 40.
+* Public functions have type annotations (`py.typed`); the package is not yet fully clean under `mypy`.
+* The effect size and the paired test use the same fractional-k conventions as the rest of the inference (heuristic for non-integer k; exact classical results when k is an integer).

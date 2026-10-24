@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "sgmean: proportional trimmed mean and robust descriptive statistics"
+version: 0.4.0
+date-released: 2026-10-24
+license: MIT
+repository-code: "https://github.com/jcarlosgaviria/sgmean-python"
+authors:
+  - family-names: Gaviria-Chaverra
+    given-names: "Juan C."
+    email: jcarlos.gaviria@udea.edu.co

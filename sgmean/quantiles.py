@@ -3,9 +3,16 @@
 ``type`` follows the numbering of R's ``quantile()``. Statgraphics'
 "Summary Statistics" quartiles are reproduced by ``type=2``.
 """
+from __future__ import annotations
+
+from typing import Any, Optional, Sequence
+
+from numpy.typing import ArrayLike
 import math
 from fractions import Fraction
 import numpy as np
+
+from ._input import to_array
 
 _METHOD = {1: "inverted_cdf", 2: "averaged_inverted_cdf",
            3: "closest_observation", 4: "interpolated_inverted_cdf",
@@ -57,7 +64,8 @@ def _one(xs, n, p, type):
     return lo + g * (hi - lo)
 
 
-def quantile(x, probs=(0.25, 0.5, 0.75), type=2):
+def quantile(x: ArrayLike, probs: Any = (0.25, 0.5, 0.75), type: int = 2,
+             nan_policy: str = "raise") -> Any:
     """Quantiles of ``x`` using Hyndman-Fan definition ``type`` (1-9).
 
     Default ``type=2`` (R: ``quantile(x, type=2)``; NumPy:
@@ -106,9 +114,7 @@ def quantile(x, probs=(0.25, 0.5, 0.75), type=2):
     """
     if type not in _METHOD:
         raise ValueError("type must be an integer between 1 and 9")
-    xs = np.sort(np.asarray(x, dtype=float).ravel())
-    if xs.size == 0 or np.isnan(xs).any():
-        raise ValueError("x must be non-empty and free of NaN")
+    xs = np.sort(to_array(x, nan_policy))
     p = np.atleast_1d(np.asarray(probs, dtype=float))
     if ((p < 0) | (p > 1)).any():
         raise ValueError("probs must be in [0, 1]")
@@ -116,12 +122,12 @@ def quantile(x, probs=(0.25, 0.5, 0.75), type=2):
     return out if np.ndim(probs) else float(out[0])
 
 
-def quartiles(x, type=2):
+def quartiles(x: ArrayLike, type: int = 2, nan_policy: str = "raise") -> Any:
     """Return (Q1, median, Q3). Default ``type=2`` matches Statgraphics."""
-    q = quantile(x, (0.25, 0.5, 0.75), type)
+    q = quantile(x, (0.25, 0.5, 0.75), type, nan_policy)
     return float(q[0]), float(q[1]), float(q[2])
 
 
-def iqr(x, type=2):
-    q1, _, q3 = quartiles(x, type)
+def iqr(x: ArrayLike, type: int = 2, nan_policy: str = "raise") -> float:
+    q1, _, q3 = quartiles(x, type, nan_policy)
     return q3 - q1
