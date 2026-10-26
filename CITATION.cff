@@ -3,9 +3,12 @@ message: "If you use this software, please cite it as below."
 title: "sgmean: proportional trimmed mean and robust descriptive statistics"
 version: 0.4.0
 date-released: 2026-10-24
+doi: 10.5281/zenodo.23653293
 license: MIT
 repository-code: "https://github.com/jcarlosgaviria/sgmean-python"
 authors:
   - family-names: Gaviria-Chaverra
     given-names: "Juan C."
+    orcid: "https://orcid.org/0009-0008-9403-416X"
+    affiliation: "Universidad de Antioquia"
     email: jcarlos.gaviria@udea.edu.co
